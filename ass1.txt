@@ -1,0 +1,173 @@
+
+check that each "command line" has atleast 6 "words", that each word is within the bounds of acceptable values, if an error is reported:terminate
+
+include in struct a number of times ran
+
+first word - (0-59/*)    (minute)
+second word- (0-23/*)    (hour) 
+third word - (1-31/*)    (day of month)
+fourth word- (0-11/*/(3 letter appreviation of month)) (month)
+fifth word-  (0-6/*/(3 letter appreviation of weekdays)) (day of week)
+
+Check third and fifth word line up | ??
+Check third word falls within fourth word
+
+int numDays;
+const int YEAR = 2022;
+// mite not need this if we dont use the first day of the month function thing
+switch (month){
+	case 0:
+		numDays = 31;
+		break;
+	case 'jan':
+		numDays = 31;
+		break;
+	case 1:
+		numDays = 28;
+		break;
+	case 'feb':
+		numDays = 28;
+		break;
+	case 2:
+		numDays = 31;
+		break;
+	case 'mar':
+		numDays = 31;
+		break;
+	case 3:
+		numDays = 30;
+		break;
+	case 'apr':
+		numDays = 30;
+		break;
+	case 4:
+		numDays = 31;
+		break;
+	case 'may':
+		numDays = 31;
+		break;
+	case 5:
+		numDays = 30;
+		break;
+	case 'jun':
+		numDays = 30;
+		break;
+	case 6:
+		numDays = 31;
+		break;
+	case 'jul':
+		numDays = 31;
+		break;
+	case 7:
+		numDays = 31;
+		break;
+	case 'aug':
+		numDays = 31;
+		break;
+	case 8:
+		numDays = 30;
+		break;
+	case 'sep':
+		numDays = 30;
+		break;
+	case 9:
+		numDays = 31;
+		break;
+	case 'oct':
+		numDays = 31;
+		break;
+	case 10:
+		numDays = 30;
+		break;
+	case 'nov:
+		numDays = 30;
+		break;
+	case 1:
+		numDays = 31;
+		break;
+	case 'dec':
+		numDays = 31;
+		break;
+
+}
+
+
+//yoink first_day_of_the_month code from chris if needed?
+
+
+
+//creation of array to then loop over
+
+int monthArray[1440*numDays][5];
+int counter = 0;
+for(int i = 0; i < numDays; i++){
+	for(int j=0; j<24; j++){
+		for(int k=0; k<60; k++){
+			monthArray[counter][0] = k; 
+			monthArray[counter][1] = j;
+			monthArray[counter][2] = i;
+			monthArray[counter][3] = month;
+			monthArray[counter][4] = 0;
+			counter++;
+		}
+	}
+}
+// dont know how to change individual struct deets so i put in placeholder shit and my brains melted rn so not sure i can fix before i //go to sleep
+//loop through array to add to numProcessRunning and to add to number of times ran in the struct
+int counter2 = 0;
+for(int i = 0; i < numDays; i++){
+	for(int j=0; j<24; j++){
+	}
+		for(int k=0; k<60; k++){
+			if(monthArray[counter2][3] == month || struct[month] == '*' ){
+				if(monthArray[counter2][2] == struct[day] || struct[day] == '*') {
+					if(monthArray[counter2][1] == struct[hour] || struct[hour] == '*'){
+						if(monthArray[counter2][0] == struct[minute] || struct[minute] == '*'){
+							struct[numTimesRan]++;
+							for(int l = 0; l<struct[time]; l++){
+								monthArray[counter2+l][4] += 1;
+							}
+		
+						}
+					}
+				}
+			}
+				
+		}
+}
+
+
+
+max concurrent commands
+int max = 0;
+int counter3 = 0;
+for(int i = 0; i < numDays*1440; i++){
+	if(monthArray[counter3][4]>max){
+		max = monthArray[counter3][4];
+	}
+}
+printf("&i\n", max);
+
+
+not sure how to loop through structs|? but the other 2 should be easy
+
+
+
+
+
+get amount of days in requested month - i think a 2d array of 5x44640 (upto 44640 as max minutes in a given month)
+each array needs minute-hour-dayOfMonth-month-numProcessRunning
+loop through every minute of every day of every week of the month
+for each minute: check if any new commands need to start, if so increment the struct and the affected arrays
+
+
+
+
+
+
+Ask Chow:
+Do we need to "check" that there are are most 20 "command lines"
+Do we need to "check" that every command name in crontab-file will also appear in estimates-file
+Do we need to "check" that "All processes will have terminated before the end of the requested month" is true
+Do we need to "check" that the day of the week makes sense
+In workshop something was said about if date and day of week doesn't/does line up, did chow understand what was said
