@@ -126,7 +126,7 @@ void calc_time(char month[])
       case 8:
           numDays = 30;
           break;
-  cc -std=c99 -Wall -Werror -pedantic -o    case 9:
+      case 9:
           numDays = 31;
           break;
       case 10:
