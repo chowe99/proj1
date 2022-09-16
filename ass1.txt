@@ -107,6 +107,7 @@ for(int i = 0; i < numDays; i++){
 			monthArray[counter][1] = j;
 			monthArray[counter][2] = i;
 			monthArray[counter][3] = month;
+
 			monthArray[counter][4] = 0;
 			counter++;
 		}
