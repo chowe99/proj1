@@ -1,35 +1,40 @@
 //  CITS2002 Project 1 2022
-//  Student1:   22575612   Howe   Cody 
-//  Student2:   22700309   Goodridge   Sam 
+//  Student1:   22575612   Howe   Cody
+//  Student2:   22700309   Goodridge   Sam
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
-#define COMMAND_LINES   20
-#define LINE_LEN        100
-#define COMMAND_LEN     40
+#define COMMAND_LINES 20
+#define LINE_LEN 100
+#define COMMAND_LEN 40
+#define YEAR 2022
 
 void trim_line(char line[])
 {
     int i = 0;
 
-//  LOOP UNTIL WE REACH THE END OF line
-    while(line[i] != '\0') {
+    //  LOOP UNTIL WE REACH THE END OF line
+    while (line[i] != '\0')
+    {
 
-//  CHECK FOR CARRIAGE-RETURN OR NEWLINE
-        if( line[i] == '\r' || line[i] == '\n'|| line[i] == ' ') {
+        //  CHECK FOR CARRIAGE-RETURN OR NEWLINE
+        if (line[i] == '\r' || line[i] == '\n' || line[i] == ' ')
+        {
             line[i] = '\0'; // overwrite with null-byte
             break;          // leave the loop early
         }
-        i = i+1;            // iterate through character array
+        i++;
     }
 }
 
-struct commands 
+struct commands
 {
+
     char command[COMMAND_LEN];
     int time;
     int min;
@@ -41,114 +46,172 @@ struct commands
     int to_minutes;
 };
 
-/*
-void calc_time(char month[])
+int first_day_of_month(int month, int year)
 {
-    // the month represented with an int
-    int m;
-    if (strncmp("jan", month, 3))
-    {
-        m = 0;
-    }
-    if (strncmp("feb", month, 3))
-    {
-        m = 1;
-    }
-    if (strncmp("mar", month, 3))
-    {
-        m = 2;
-    }
-    if (strncmp("apr", month, 3))
-    {
-        m = 3;
-    }
-    if (strncmp("may", month, 3))
-    {
-        m = 4;
-    }
-    if (strncmp("jun", month, 3))
-    {
-        m = 5;
-    }
-    if (strncmp("jul", month, 3))
-    {
-        m = 6;
-    }
-    if (strncmp("aug", month, 3))
-    {
-        m = 7;
-    }
-    if (strncmp("sep", month, 3))
-    {
-        m = 8;
-    }
-    if (strncmp("oct", month, 3))
-    {
-        m = 9;
-    }
-    if (strncmp("nov", month, 3))
-    {
-        m = 10;
-    }
-    if (strncmp("dec", month, 3))
-    {
-        m = 11;
-    }
-    int minutes;
-    int numDays;
-    const int YEAR = 2022;
-    // mite not need this if we dont use the first day of the month function thing
-    switch (m){
-        case 0:
-          numDays = 31;
-          break;
-      case 1:
-          numDays = 28;
-          break;
-      case 2:
-          numDays = 31;
-          break;
-      case 3:
-          numDays = 30;
-          break;
-      case 4:
-          numDays = 31;
-          break;
-      case 5:
-          numDays = 30;
-          break;
-      case 6:
-          numDays = 31;
-          break;
-      case 7:
-          numDays = 31;
-          break;
-      case 8:
-          numDays = 30;
-          break;
-      case 9:
-          numDays = 31;
-          break;
-      case 10:
-          numDays = 30;
-          break;
-      case 11:
-          numDays = 31;
-          break;
-    }
+    struct tm tm;
 
+    //  SET ALL FIELDS OF tm TO ZERO TO MAKE SOME FIELDS 'UNKNOWN'
+    memset(&tm, 0, sizeof(tm));
+
+    //  INITIALIZE THE FILEDS THAT WE ALREADY KNOW
+    tm.tm_mday = 1;
+    tm.tm_mon = month - 1; // 0=Jan, 1=Feb, ....
+    tm.tm_year = year - 1900;
+
+    //  ASK THE POSIX FUNCTION mktime TO DETERMINE THE 'UNKNOWN' FIELDS
+    //  See: http://pubs.opengroup.org/onlinepubs/9699919799/
+    mktime(&tm);
+
+    //  RETURN THE INTEGER MONTH VALUE
+    return tm.tm_wday; // 0=Sun, 1=Mon, .....
 }
-*/
+
+struct data
+{
+    int first_day_of_month;
+    int monthMinute;
+    int month;
+    int end_of_month;
+};
+
+struct data calc_time(char month[])
+{
+    struct data d;
+    // the month in minutes
+    int monthMinute;
+    // the month
+    int m;
+    if (strncmp("jan", month, 3) == 0)
+    {
+        monthMinute = 0;
+        m = 0;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("feb", month, 3) == 0)
+    {
+        monthMinute = 44640;
+        m = 1;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("mar", month, 3) == 0)
+    {
+        monthMinute = 84960;
+        m = 2;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("apr", month, 3) == 0)
+    {
+        monthMinute = 129600;
+        m = 3;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("may", month, 3) == 0)
+    {
+        monthMinute = 172800;
+        m = 4;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("jun", month, 3) == 0)
+    {
+        monthMinute = 217440;
+        m = 5;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("jul", month, 3) == 0)
+    {
+        monthMinute = 260640;
+        m = 6;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("aug", month, 3) == 0)
+    {
+        monthMinute = 305280;
+        m = 7;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("sep", month, 3) == 0)
+    {
+        monthMinute = 349920;
+        m = 8;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("oct", month, 3) == 0)
+    {
+        monthMinute = 393120;
+        m = 9;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("nov", month, 3) == 0)
+    {
+        monthMinute = 437760;
+        m = 10;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else if (strncmp("dec", month, 3) == 0)
+    {
+        monthMinute = 480960;
+        m = 11;
+        d.first_day_of_month = first_day_of_month(m, YEAR);
+    }
+    else
+    {
+        printf("enter a month in 3 letter form");
+        exit(EXIT_FAILURE);
+    }
+    switch (m)
+    {
+    case 0:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 1:
+        d.end_of_month = monthMinute + 28 * 1440;
+        break;
+    case 2:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 3:
+        d.end_of_month = monthMinute + 30 * 1440;
+        break;
+    case 4:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 5:
+        d.end_of_month = monthMinute + 30 * 1440;
+        break;
+    case 6:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 7:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 8:
+        d.end_of_month = monthMinute + 30 * 1440;
+        break;
+    case 9:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    case 10:
+        d.end_of_month = monthMinute + 30 * 1440;
+        break;
+    case 11:
+        d.end_of_month = monthMinute + 31 * 1440;
+        break;
+    }
+    d.month = m;
+    d.monthMinute = monthMinute;
+    return d;
+}
+
 int line_count;
 struct commands c1[COMMAND_LINES];
-void process_estimates(char estimatef[]) 
+void process_estimates(char estimatef[])
 {
     FILE *estimates = fopen(estimatef, "r");
     // a string to hold each line while processing them
     char line[LINE_LEN];
     int line_index = 0;
-    char time[10];
-    while(fgets(line, sizeof(line), estimates) != NULL)
+    char time[11];
+    while (fgets(line, sizeof(line), estimates) != NULL)
     {
         char left_word[COMMAND_LEN];
         memset(left_word, 0, COMMAND_LEN);
@@ -157,15 +220,15 @@ void process_estimates(char estimatef[])
             continue;
         }
         int i = 0;
-        // 
-        while(line[i] != ' ')
+        //
+        while (line[i] != ' ')
         {
             left_word[i] = line[i];
             i++;
         }
         // goto next 'word' (minutes)
         int j = 0;
-        while(line[i] != '\0')
+        while (line[i] != '\0')
         {
             time[j] = line[i];
             i++;
@@ -179,12 +242,12 @@ void process_estimates(char estimatef[])
     line_count = line_index;
 }
 
-void process_cron(char cronf[]) 
+void process_cron(char cronf[])
 {
     FILE *cron = fopen(cronf, "r");
     char line[LINE_LEN];
     // go through each line in the crontab file
-    while(fgets(line, sizeof(line), cron) != NULL)
+    while (fgets(line, sizeof(line), cron) != NULL)
     {
         // skip comments
         if (line[0] == '#')
@@ -193,74 +256,181 @@ void process_cron(char cronf[])
         }
         // increment index based on how many estimate commands are provided
         int i = 0;
-        while(i < line_count)
+        while (i < line_count)
         {
             // if the cron command contains an estimate command save and process
             // the crontab command
-            if(strnstr(line, c1[i].command, strlen(line)))
+            if (strnstr(line, c1[i].command, strlen(line)))
             {
-
+                c1[i].frequency = 0;
                 char *stop = strnstr(line, c1[i].command, strlen(line));
-                for (char *start = &line[0]; start < stop; start++) {
-                   printf("%c", *start); 
+                char placeholder[4];
+                int index = 0;
+                int cmd_num = 0;
+                // save each minute, hour, day, month, and day of week to the structure
+                // if its an asterisk, save value as 100. Also calculate its frequency
+                for (char *start = &line[0]; start < stop; start++)
+                {
+                    if (*start != ' ')
+                    {
+                        index++;
+                    }
+                    else
+                    {
+                        
+                        if (cmd_num == 0)
+                        {
+                            memset(placeholder, 0, 4);
+                            memcpy(placeholder, start - index, index);
+                            if (strncmp(placeholder, "*", 1) == 0)
+                            {
+                                c1[i].frequency = 1;
+                                c1[i].min = 100;
+                                cmd_num = 2;
+                                printf("%s ", placeholder);
+                            }
+                            else
+                            {
+                                c1[i].min = atoi(placeholder);
+                                c1[i].time += c1[i].min;
+                                printf("%i ", c1[i].min);
+                            }
+                        }
+                        else if (cmd_num == 1)
+                        {
+                            memset(placeholder, 0, 4);
+                            memcpy(placeholder, start - index, index);
+                            if (strncmp(placeholder, "*", 1) == 0)
+                            {
+                                c1[i].frequency = 60;
+                                c1[i].hour = 100;
+                                printf("%s ", placeholder);
+                            }
+                            else
+                            {
+                                c1[i].hour = atoi(placeholder);
+                                c1[i].time += c1[i].hour * 60;
+                                printf("%i ", c1[i].hour);
+                            }
+                        }
+                        else if (cmd_num == 2)
+                        {
+                            memset(placeholder, 0, 4);
+                            memcpy(placeholder, start - index, index);
+                            if (strncmp(placeholder, "*", 1) == 0)
+                            {
+                                c1[i].frequency = 60 * 24;
+                                c1[i].day = 100;
+                                printf("%s ", placeholder);
+                            }
+                            else
+                            {
+                                c1[i].day = atoi(placeholder);
+                                c1[i].time += atoi(placeholder) * 24 * 60;
+                                printf("%i ", c1[i].day);
+                            }
+                        }
+                        else if (cmd_num == 3)
+                        {
+                            memset(placeholder, 0, 4);
+                            memcpy(placeholder, start - index, index);
+                            if (strncmp(placeholder, "*", 1) == 0)
+                            {
+                                c1[i].month = 100;
+                                printf("%s ", placeholder);
+                            }
+                            else
+                            {
+                                c1[i].month = atoi(placeholder);
+                                printf("%i ", c1[i].month);
+                            }
+                        }
+                        else if (cmd_num == 4)
+                        {
+                            memset(placeholder, 0, 4);
+                            memcpy(placeholder, start - index, index);
+                            if (strncmp(placeholder, "*", 1) == 0)
+                            {
+                                c1[i].day_of_week = 100;
+                                printf("%s ", placeholder);
+                            }
+                            else
+                            {
+                                if (c1[i].day == 100)
+                                {
+                                    if (strncmp(placeholder, "mon", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 0;
+                                    } else if (strncmp(placeholder, "tue", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 1;
+                                    } else if (strncmp(placeholder, "wed", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 2;
+                                    } else if (strncmp(placeholder, "thu", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 3;
+                                    } else if (strncmp(placeholder, "fri", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 4;
+                                    } else if (strncmp(placeholder, "sat", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 5;
+                                    } else if (strncmp(placeholder, "sun", 3) == 0)
+                                    {
+                                        c1[i].day_of_week = 6;
+                                    } 
+                                    
+                                }
+                                
+                                printf("%i ", c1[i].day_of_week);
+                            }
+                        }
+                        cmd_num++;
+                        index = 0;
+                    }
                 }
             }
             i++;
         }
+        printf("\n");
     }
 }
 int main(int argc, char *argv[])
 {
-     if (argc != 3) {
-         printf("enter arguments");
-     }
-    //for (int i = 0; i < COMMAND_LINES; i++) {
-        // c1[i].min; 
-    //}
-
-    int minute = 0;
-    while(minute < 480960)
+    if (argc != 4)
     {
-         if (0 < minute && minute < 44640)
-         {
-            // january 
-         }
-         if (44640 < minute && minute < 84960) {
-             // feb
-         }
-         if (84960 < minute && minute < 129600) {
-            // march 
-         }
-         if (129600 < minute && minute < 172800) {
-             // april
-         }
-         if (172800 < minute && minute < 217440) {
-             // may
-         }
-         if (217440 < minute && minute < 260640) {
-             // june
-         }
-         if (260640 < minute && minute < 305280) {
-             // july
-         }
-         if (305280 < minute && minute < 349920) {
-            // aug   
-         }
-         if (349920 < minute && minute < 393120) {
-           // sep  
-         }
-         if (393120 < minute && minute < 437760) {
-           // oct
-         }
-         if (minute < 437760 && minute < 480960) {
-           // nov 
-         }
-         if (minute < 480960 && minute < 525600) {
-           // dec 
-         }
-         minute++;
+        printf("enter 3 arguments of the form month(3 characters), crontab-file, estimates-fil\n");
+        exit(EXIT_FAILURE);
     }
-    process_estimates(argv[2]);
-    process_cron(argv[1]);
-    
+    // calculate the time data of the given month
+    struct data timeData = calc_time(argv[1]);
+    printf("%i %i %i\n", timeData.month, timeData.monthMinute, timeData.end_of_month);
+    int day;
+    day = timeData.first_day_of_month;
+    int time = timeData.monthMinute;
+    while (time < timeData.end_of_month)
+    {
+        // iterate over command structure array
+        for (int i = 0; i < COMMAND_LINES; i++)
+        {
+            if (c1[i].month == 100 || c1[i].month == timeData.month)
+            {
+                if (c1[i].day_of_week == day || c1[i].day_of_week == 100)
+                {
+                    // time might have to be switched to be relative to a month 
+                    if (c1[i].time == time)
+                    {
+                        //number of processes + concurrent processes++
+                    }
+                    
+                }
+                
+            }
+        }
+        time++;
+
+    }
+    process_estimates(argv[3]);
+    process_cron(argv[2]);
 }
