@@ -224,7 +224,7 @@ void process_estimates(char estimatef[])
             printf("Estimates file must contain valid durations in minutes (numeric form).\n");
             exit(EXIT_FAILURE);
         }
-        
+
         commands[line_index].time = atoi(time);
         strcpy(commands[line_index].command, left_word);
         line_index++;
@@ -359,12 +359,12 @@ void process_cron(char cronf[])
                             {
                                 if (commands[i].day == 100)
                                 {
-                                    if (strnlen(placeholder, 4) != (long) 3)
+                                    if (strnlen(placeholder, 4) != (long)3)
                                     {
                                         printf("\nEnter a valid day.\n");
                                         exit(EXIT_FAILURE);
                                     }
-                                    
+
                                     if (strncmp(placeholder, "mon", 3) == 0 || strncmp(placeholder, "1", 3) == 0)
                                     {
                                         commands[i].day_of_week = 1;
@@ -392,7 +392,9 @@ void process_cron(char cronf[])
                                     else if (strncmp(placeholder, "sun", 3) == 0 || strncmp(placeholder, "0", 3) == 0)
                                     {
                                         commands[i].day_of_week = 0;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         printf("Enter a valid day in 3 letter form or digit form (0-6).\n");
                                         exit(EXIT_FAILURE);
                                     }
@@ -409,7 +411,6 @@ void process_cron(char cronf[])
                     printf("\nEnter 6 fields for the crontab file.\n");
                     exit(EXIT_FAILURE);
                 }
-                
             }
             i++;
         }
@@ -431,7 +432,7 @@ int main(int argc, char *argv[])
     int concurrent_processes = 0;
     process_estimates(argv[3]);
     process_cron(argv[2]);
-    while (time < timeData.end_of_month)
+    while (time <= timeData.end_of_month)
     {
         // iterate over command structure array
         for (int i = 0; i < COMMAND_LINES; i++)
@@ -446,15 +447,20 @@ int main(int argc, char *argv[])
                         {
                             if (commands[i].month == 100 || commands[i].month == timeData.month)
                             {
-                                commands[i].concurrent_processes[commands[i].concurrent_index] = time + commands[i].time;
-                                commands[i].concurrent_index = (commands[i].concurrent_index + 1) % 20;
-                                commands[i].total_executions++;
-                                concurrent_processes++;
-                                if (concurrent_processes > peak_processes)
+                                
+                                if (concurrent_processes < 20)
                                 {
-                                    peak_processes = concurrent_processes;
+                                    commands[i].concurrent_processes[commands[i].concurrent_index] = time + commands[i].time;
+                                    commands[i].concurrent_index = (commands[i].concurrent_index + 1) % 20;
+                                    commands[i].total_executions++;
+                                    concurrent_processes++;
+                                    if (concurrent_processes > peak_processes)
+                                    {
+                                        peak_processes = concurrent_processes;
+                                    }
                                 }
-                                printf("command: %s | exec time: %d | conc proc: %d\n", commands[i].command, commands[i].time, concurrent_processes);
+
+                                //printf("command:%s|min:%d|hour:%d|day:%d|DoW:%d|month:%d|time:%d\n", commands[i].command, commands[i].min, commands[i].hour, commands[i].day, commands[i].day_of_week, commands[i].month, time);
                             }
                         }
                     }
@@ -465,17 +471,21 @@ int main(int argc, char *argv[])
         {
             for (int j = 0; j < MAX_PROCESSES; j++)
             {
-
                 if (time == commands[i].concurrent_processes[j] && time != 0)
                 {
                     commands[i].concurrent_processes[j] = 0;
                     concurrent_processes--;
                 }
+                if (time/60/24%timeData.end_of_month == 0)
+                {
+                    
+                }
+                
             }
         }
         if (time % 1440 == 0)
         {
-            // printf("date: %d\n", time / 60 / 24);
+            printf("date: %d\n", time / 60 / 24);
             day = (day + 1) % 7;
         }
         time++;
@@ -487,6 +497,7 @@ int main(int argc, char *argv[])
     {
         if (commands[cmd].total_executions > most_executed)
         {
+            printf("command:%s|executions:%d\n", commands[cmd].command, commands[cmd].total_executions);
             memset(most_executions, 0, COMMAND_LEN);
             most_executed = commands[cmd].total_executions;
             strncpy(most_executions, commands[cmd].command, COMMAND_LEN);

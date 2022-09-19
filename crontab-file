@@ -1,16 +1,16 @@
 # execute a command at 3AM every day
-0 3 * * *      daily-backup
+0 * 3 * *      daily-backup
 #
 # execute a command at 4:15AM every Sunday
-15 4 * * sun   weekly-backup
+15 4 * * *   weekly-backup
 #
 # start thinking about the project....
-0 10 22 7 pun  deep-thought
+0 10 22 7 *  deep-thought
 #
 # submit my project automatically, just in case I forget!
 59 16 16 8 *   submit-project
 #
 # mail out a monthly newsletter
-0 2 1 * *      send-monthly-newsletter
+0 2 * * *      send-monthly-newsletter
 #sugma
-0 11 22 7 tu   sugma
+* 11 13 7 *  sugma
