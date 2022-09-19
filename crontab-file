@@ -12,3 +12,5 @@
 #
 # mail out a monthly newsletter
 0 2 1 * *      send-monthly-newsletter
+#sugma
+0 11 22 7 mon   sugma
