@@ -5,7 +5,7 @@
 15 4 * * sun   weekly-backup
 #
 # start thinking about the project....
-0 10 22 7 mon  deep-thought
+0 10 22 7 pun  deep-thought
 #
 # submit my project automatically, just in case I forget!
 59 16 16 8 *   submit-project
@@ -13,4 +13,4 @@
 # mail out a monthly newsletter
 0 2 1 * *      send-monthly-newsletter
 #sugma
-0 11 22 7 mon   sugma
+0 11 22 7 tu   sugma

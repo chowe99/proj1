@@ -36,10 +36,10 @@ void trim_line(char line[])
 struct commands
 {
     char command[COMMAND_LEN];
-    int time; //
-    int min;  // min = 0 // if * then min = 60
-    int hour; // 3am  == 180 // if * then hour = 24
-    int day;  // if * then day = 32? maybe
+    int time;
+    int min;
+    int hour;
+    int day;
     int month;
     int day_of_week;
     int concurrent_processes[20];
@@ -77,7 +77,6 @@ struct data
 struct data calc_time(char month[])
 {
     struct data d;
-    // the month in minutes
     // the month
     int m;
     if (strncmp("jan", month, 3) == 0 || strncmp("0", month, 3) == 0)
@@ -142,7 +141,7 @@ struct data calc_time(char month[])
     }
     else
     {
-        printf("enter a month in 3 letter form or a number between 0-11\n");
+        printf("enter a month in 3 letter form or a number between 0-11.\n");
         exit(EXIT_FAILURE);
     }
     switch (m)
@@ -220,6 +219,12 @@ void process_estimates(char estimatef[])
             i++;
             j++;
         }
+        if (atoi(time) == 0)
+        {
+            printf("Estimates file must contain valid durations in minutes (numeric form).\n");
+            exit(EXIT_FAILURE);
+        }
+        
         commands[line_index].time = atoi(time);
         strcpy(commands[line_index].command, left_word);
         line_index++;
@@ -272,6 +277,11 @@ void process_cron(char cronf[])
                             }
                             else
                             {
+                                if (atoi(placeholder) < 0 || atoi(placeholder) > 59)
+                                {
+                                    printf("Min must be between 0 and 59.\n");
+                                    exit(EXIT_FAILURE);
+                                }
                                 commands[i].min = atoi(placeholder);
                                 printf("%i ", commands[i].min);
                             }
@@ -287,6 +297,11 @@ void process_cron(char cronf[])
                             }
                             else
                             {
+                                if (atoi(placeholder) < 0 || atoi(placeholder) > 23)
+                                {
+                                    printf("Hour must be between 0 and 23.\n");
+                                    exit(EXIT_FAILURE);
+                                }
                                 commands[i].hour = atoi(placeholder);
                                 printf("%i ", commands[i].hour);
                             }
@@ -302,6 +317,11 @@ void process_cron(char cronf[])
                             }
                             else
                             {
+                                if (atoi(placeholder) < 1 || atoi(placeholder) > 31)
+                                {
+                                    printf("Day must be between 1 and 31.\n");
+                                    exit(EXIT_FAILURE);
+                                }
                                 commands[i].day = atoi(placeholder);
                                 printf("%i ", commands[i].day);
                             }
@@ -317,6 +337,11 @@ void process_cron(char cronf[])
                             }
                             else
                             {
+                                if (atoi(placeholder) < 0 || atoi(placeholder) > 11)
+                                {
+                                    printf("Month must be between 0 and 11.\n");
+                                    exit(EXIT_FAILURE);
+                                }
                                 commands[i].month = atoi(placeholder);
                                 printf("%i ", commands[i].month);
                             }
@@ -334,33 +359,42 @@ void process_cron(char cronf[])
                             {
                                 if (commands[i].day == 100)
                                 {
-                                    if (strncmp(placeholder, "mon", 3) == 0)
+                                    if (strnlen(placeholder, 4) != (long) 3)
+                                    {
+                                        printf("\nEnter a valid day.\n");
+                                        exit(EXIT_FAILURE);
+                                    }
+                                    
+                                    if (strncmp(placeholder, "mon", 3) == 0 || strncmp(placeholder, "1", 3) == 0)
                                     {
                                         commands[i].day_of_week = 1;
                                     }
-                                    else if (strncmp(placeholder, "tue", 3) == 0)
+                                    else if (strncmp(placeholder, "tue", 3) == 0 || strncmp(placeholder, "2", 3) == 0)
                                     {
                                         commands[i].day_of_week = 2;
                                     }
-                                    else if (strncmp(placeholder, "wed", 3) == 0)
+                                    else if (strncmp(placeholder, "wed", 3) == 0 || strncmp(placeholder, "3", 3) == 0)
                                     {
                                         commands[i].day_of_week = 3;
                                     }
-                                    else if (strncmp(placeholder, "thu", 3) == 0)
+                                    else if (strncmp(placeholder, "thu", 3) == 0 || strncmp(placeholder, "4", 3) == 0)
                                     {
                                         commands[i].day_of_week = 4;
                                     }
-                                    else if (strncmp(placeholder, "fri", 3) == 0)
+                                    else if (strncmp(placeholder, "fri", 3) == 0 || strncmp(placeholder, "5", 3) == 0)
                                     {
                                         commands[i].day_of_week = 5;
                                     }
-                                    else if (strncmp(placeholder, "sat", 3) == 0)
+                                    else if (strncmp(placeholder, "sat", 3) == 0 || strncmp(placeholder, "6", 3) == 0)
                                     {
                                         commands[i].day_of_week = 6;
                                     }
-                                    else if (strncmp(placeholder, "sun", 3) == 0)
+                                    else if (strncmp(placeholder, "sun", 3) == 0 || strncmp(placeholder, "0", 3) == 0)
                                     {
                                         commands[i].day_of_week = 0;
+                                    } else {
+                                        printf("Enter a valid day in 3 letter form or digit form (0-6).\n");
+                                        exit(EXIT_FAILURE);
                                     }
                                 }
                                 printf("%i ", commands[i].day_of_week);
@@ -370,6 +404,12 @@ void process_cron(char cronf[])
                         index = 0;
                     }
                 }
+                if (cmd_num < 6)
+                {
+                    printf("\nEnter 6 fields for the crontab file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                
             }
             i++;
         }
@@ -425,26 +465,14 @@ int main(int argc, char *argv[])
         {
             for (int j = 0; j < MAX_PROCESSES; j++)
             {
-                
+
                 if (time == commands[i].concurrent_processes[j] && time != 0)
                 {
                     commands[i].concurrent_processes[j] = 0;
                     concurrent_processes--;
                 }
             }
-            // if (strncmp(commands[i].command, "", 1) == 0)
-            // {
-            //     continue;
-            // }
-            // else
-            // {
-            //     printf("%s executions: %d\n", commands[i].command, commands[i].total_executions);
-            // }
         }
-        // if (time == 0)
-        // {
-        //     printf("first day: %d\n", day);
-        // }
         if (time % 1440 == 0)
         {
             // printf("date: %d\n", time / 60 / 24);
@@ -457,14 +485,14 @@ int main(int argc, char *argv[])
     char most_executions[COMMAND_LEN];
     for (int cmd = 0; cmd < line_count; cmd++)
     {
-        if(commands[cmd].total_executions > most_executed)
-        {   
+        if (commands[cmd].total_executions > most_executed)
+        {
             memset(most_executions, 0, COMMAND_LEN);
             most_executed = commands[cmd].total_executions;
             strncpy(most_executions, commands[cmd].command, COMMAND_LEN);
         }
         total_executions += commands[cmd].total_executions;
     }
-    
+
     printf("%s %d %d\n", most_executions, total_executions, peak_processes);
 }
