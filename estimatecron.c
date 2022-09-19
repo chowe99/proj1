@@ -432,8 +432,19 @@ int main(int argc, char *argv[])
     int concurrent_processes = 0;
     process_estimates(argv[3]);
     process_cron(argv[2]);
-    while (time <= timeData.end_of_month)
+    while (time < timeData.end_of_month)
     {
+        for (int k = 0; k < line_count; k++)
+        {
+            for (int l = 0; l < MAX_PROCESSES; l++)
+            {
+                if (time == commands[k].concurrent_processes[l] && time != 0)
+                {
+                    commands[k].concurrent_processes[l] = 0;
+                    concurrent_processes--;
+                }
+            }
+        }
         // iterate over command structure array
         for (int i = 0; i < COMMAND_LINES; i++)
         {
@@ -447,7 +458,6 @@ int main(int argc, char *argv[])
                         {
                             if (commands[i].month == 100 || commands[i].month == timeData.month)
                             {
-                                
                                 if (concurrent_processes < 20)
                                 {
                                     commands[i].concurrent_processes[commands[i].concurrent_index] = time + commands[i].time;
@@ -458,36 +468,21 @@ int main(int argc, char *argv[])
                                     {
                                         peak_processes = concurrent_processes;
                                     }
+                                    
                                 }
-
-                                //printf("command:%s|min:%d|hour:%d|day:%d|DoW:%d|month:%d|time:%d\n", commands[i].command, commands[i].min, commands[i].hour, commands[i].day, commands[i].day_of_week, commands[i].month, time);
+                                // printf("command:%s|min:%d|hour:%d|day:%d|DoW:%d|month:%d|time:%d\n", commands[i].command, commands[i].min, commands[i].hour, commands[i].day, commands[i].day_of_week, commands[i].month, time);
                             }
                         }
                     }
                 }
             }
         }
-        for (int i = 0; i < line_count; i++)
-        {
-            for (int j = 0; j < MAX_PROCESSES; j++)
-            {
-                if (time == commands[i].concurrent_processes[j] && time != 0)
-                {
-                    commands[i].concurrent_processes[j] = 0;
-                    concurrent_processes--;
-                }
-                if (time/60/24%timeData.end_of_month == 0)
-                {
-                    
-                }
-                
-            }
-        }
         if (time % 1440 == 0)
         {
-            printf("date: %d\n", time / 60 / 24);
+            // printf("date: %d\n", time / 60 / 24);
             day = (day + 1) % 7;
         }
+        //printf("%d:%d %d/%d %d\n", time / 60 % 24, time % 60, time / 60 / 24, timeData.month, concurrent_processes);
         time++;
     }
     int total_executions = 0;
@@ -495,9 +490,9 @@ int main(int argc, char *argv[])
     char most_executions[COMMAND_LEN];
     for (int cmd = 0; cmd < line_count; cmd++)
     {
+        printf("command:%s|executions:%d\n", commands[cmd].command, commands[cmd].total_executions);
         if (commands[cmd].total_executions > most_executed)
-        {
-            printf("command:%s|executions:%d\n", commands[cmd].command, commands[cmd].total_executions);
+        {   
             memset(most_executions, 0, COMMAND_LEN);
             most_executed = commands[cmd].total_executions;
             strncpy(most_executions, commands[cmd].command, COMMAND_LEN);
