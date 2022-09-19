@@ -80,69 +80,69 @@ struct data calc_time(char month[])
     // the month in minutes
     // the month
     int m;
-    if (strncmp("jan", month, 3) == 0)
+    if (strncmp("jan", month, 3) == 0 || strncmp("0", month, 3) == 0)
     {
         m = 0;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("feb", month, 3) == 0)
+    else if (strncmp("feb", month, 3) == 0 || strncmp("1", month, 3) == 0)
     {
         m = 1;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("mar", month, 3) == 0)
+    else if (strncmp("mar", month, 3) == 0 || strncmp("2", month, 3) == 0)
     {
         m = 2;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("apr", month, 3) == 0)
+    else if (strncmp("apr", month, 3) == 0 || strncmp("3", month, 3) == 0)
     {
         m = 3;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("may", month, 3) == 0)
+    else if (strncmp("may", month, 3) == 0 || strncmp("4", month, 3) == 0)
     {
         m = 4;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("jun", month, 3) == 0)
+    else if (strncmp("jun", month, 3) == 0 || strncmp("5", month, 3) == 0)
     {
         m = 5;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("jul", month, 3) == 0)
+    else if (strncmp("jul", month, 3) == 0 || strncmp("6", month, 3) == 0)
     {
         m = 6;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("aug", month, 3) == 0)
+    else if (strncmp("aug", month, 3) == 0 || strncmp("7", month, 3) == 0)
     {
         m = 7;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("sep", month, 3) == 0)
+    else if (strncmp("sep", month, 3) == 0 || strncmp("8", month, 3) == 0)
     {
         m = 8;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("oct", month, 3) == 0)
+    else if (strncmp("oct", month, 3) == 0 || strncmp("9", month, 3) == 0)
     {
         m = 9;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("nov", month, 3) == 0)
+    else if (strncmp("nov", month, 3) == 0 || strncmp("10", month, 3) == 0)
     {
         m = 10;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
-    else if (strncmp("dec", month, 3) == 0)
+    else if (strncmp("dec", month, 3) == 0 || strncmp("11", month, 3) == 0)
     {
         m = 11;
         d.first_day_of_month = first_day_of_month(m, YEAR);
     }
     else
     {
-        printf("enter a month in 3 letter form");
+        printf("enter a month in 3 letter form or a number between 0-11\n");
         exit(EXIT_FAILURE);
     }
     switch (m)
