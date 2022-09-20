@@ -15,24 +15,6 @@
 #define YEAR 2022
 #define MAX_PROCESSES 20
 
-void trim_line(char line[])
-{
-    int i = 0;
-
-    //  LOOP UNTIL WE REACH THE END OF line
-    while (line[i] != '\0')
-    {
-
-        //  CHECK FOR CARRIAGE-RETURN OR NEWLINE
-        if (line[i] == '\r' || line[i] == '\n' || line[i] == ' ')
-        {
-            line[i] = '\0'; // overwrite with null-byte
-            break;          // leave the loop early
-        }
-        i++;
-    }
-}
-
 struct commands
 {
     char command[COMMAND_LEN];
@@ -46,7 +28,7 @@ struct commands
     int concurrent_index;
     int total_executions;
 };
-
+// Taken from Chris' workshop
 int first_day_of_month(int month, int year)
 {
     struct tm tm;
@@ -79,6 +61,7 @@ struct data calc_time(char month[])
     struct data d;
     // the month
     int m;
+    // Turning Month string into an Integer
     if (strncmp("jan", month, 3) == 0 || strncmp("0", month, 3) == 0)
     {
         m = 0;
@@ -144,6 +127,7 @@ struct data calc_time(char month[])
         printf("enter a month in 3 letter form or a number between 0-11.\n");
         exit(EXIT_FAILURE);
     }
+    // Setting end of month minutes
     switch (m)
     {
     case 0:
@@ -260,12 +244,14 @@ void process_cron(char cronf[])
                 // if its an asterisk, save value as 100.
                 for (char *start = &line[0]; start < stop; start++)
                 {
+                    // increment index until the end of word
                     if (*start != ' ')
                     {
                         index++;
                     }
                     else
                     {
+                        // then copy the memory (string) between "start" and "index" and save to placeholder
                         if (cmd_num == 0)
                         {
                             memset(placeholder, 0, 4);
@@ -364,7 +350,7 @@ void process_cron(char cronf[])
                                         printf("\nEnter a valid day.\n");
                                         exit(EXIT_FAILURE);
                                     }
-
+                                    // check the day of week data is valid
                                     if (strncmp(placeholder, "mon", 3) == 0 || strncmp(placeholder, "1", 3) == 0)
                                     {
                                         commands[i].day_of_week = 1;
@@ -424,6 +410,7 @@ int main(int argc, char *argv[])
         printf("enter 3 arguments of the form: month(3 characters) crontab-file estimates-file\n");
         exit(EXIT_FAILURE);
     }
+    // setting default values
     int peak_processes = 0;
     struct data timeData = calc_time(argv[1]);
     int day;
@@ -432,6 +419,8 @@ int main(int argc, char *argv[])
     int concurrent_processes = 0;
     process_estimates(argv[3]);
     process_cron(argv[2]);
+
+    // Decrementing all relevent processes
     while (time < timeData.end_of_month)
     {
         for (int k = 0; k < line_count; k++)
@@ -445,30 +434,37 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        // iterate over command structure array
+        // iterate over command structure array and if the all data matches then command is added
         for (int i = 0; i < COMMAND_LINES; i++)
         {
+            // if the minute matches or minute was inputted was an '*'
             if (commands[i].min == 100 || commands[i].min == time % 60)
             {
+                // if the hour matches or was inputted was an '*'
                 if (commands[i].hour == 100 || commands[i].hour == time / 60 % 24)
                 {
+                    // if the day matches or was inputted was an '*'
                     if (commands[i].day == 100 || commands[i].day == time / 60 / 24)
                     {
+                        // if the day of week matches or was inputted was an '*'
                         if (commands[i].day_of_week == 100 || commands[i].day_of_week == day)
                         {
+                            // if the month matches or was inputted was an '*'
                             if (commands[i].month == 100 || commands[i].month == timeData.month)
                             {
+                                // if the max amount of processors hasnt been reached
                                 if (concurrent_processes < 20)
                                 {
                                     commands[i].concurrent_processes[commands[i].concurrent_index] = time + commands[i].time;
                                     commands[i].concurrent_index = (commands[i].concurrent_index + 1) % 20;
+                                    // incrementing
                                     commands[i].total_executions++;
                                     concurrent_processes++;
+                                    // if new peak then update peak
                                     if (concurrent_processes > peak_processes)
                                     {
                                         peak_processes = concurrent_processes;
                                     }
-                                    
                                 }
                                 // printf("command:%s|min:%d|hour:%d|day:%d|DoW:%d|month:%d|time:%d\n", commands[i].command, commands[i].min, commands[i].hour, commands[i].day, commands[i].day_of_week, commands[i].month, time);
                             }
@@ -482,7 +478,8 @@ int main(int argc, char *argv[])
             // printf("date: %d\n", time / 60 / 24);
             day = (day + 1) % 7;
         }
-        //printf("%d:%d %d/%d %d\n", time / 60 % 24, time % 60, time / 60 / 24, timeData.month, concurrent_processes);
+        // debugging stuff
+        // printf("%d:%d %d/%d %d\n", time / 60 % 24, time % 60, time / 60 / 24, timeData.month, concurrent_processes);
         time++;
     }
     int total_executions = 0;
@@ -491,12 +488,14 @@ int main(int argc, char *argv[])
     for (int cmd = 0; cmd < line_count; cmd++)
     {
         printf("command:%s|executions:%d\n", commands[cmd].command, commands[cmd].total_executions);
+        // if the commands execution has surpassed the most executed, set as most executed
         if (commands[cmd].total_executions > most_executed)
-        {   
+        {
             memset(most_executions, 0, COMMAND_LEN);
             most_executed = commands[cmd].total_executions;
             strncpy(most_executions, commands[cmd].command, COMMAND_LEN);
         }
+        // increment total_executions by the commands total executions
         total_executions += commands[cmd].total_executions;
     }
 
