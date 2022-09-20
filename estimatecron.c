@@ -498,6 +498,7 @@ int main(int argc, char *argv[])
         // increment total_executions by the commands total executions
         total_executions += commands[cmd].total_executions;
     }
-
     printf("%s %d %d\n", most_executions, total_executions, peak_processes);
+
+
 }
